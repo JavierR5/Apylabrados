@@ -396,3 +396,5 @@ class Board():
             print(key)
             for i in dic[key]:
                 print(i.__str__())
+
+
