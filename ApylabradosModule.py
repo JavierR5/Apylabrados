@@ -1,3 +1,10 @@
+#Funciones
+
+def trans_coor(x,y):
+    return 14.3-y,14.3-x
+
+#Clases
+
 class Pawn():
 
     points = {"A":1,"B":3,"C":3,"D":2,"E":1,"F":4,"G":2,"H":4,"I":1,
@@ -248,7 +255,7 @@ class Board():
 
         """
         Muestra el tablero
-        """
+
         print("\n ", end = " ")
         for n in range(len(self.board)):
           print("{}{} ".format(0 if n <= 9 else "", n), end = " ")
@@ -259,7 +266,28 @@ class Board():
             print(self.board[i][j] + " |", end = " ")
           print("{}{}".format(0 if i <= 9 else "", i), end = " ")
           print("\n+" + "---+" * len(self.board))
-    
+"""
+        import matplotlib.pyplot as plt
+        import numpy as np
+        x = np.linspace(0,15,100)
+        plt.figure(figsize=[10,10]) # Sirve para definir un mayor tamaño de la imagen.
+        for i in range(16):
+            plt.plot([i]*100,x,c="#000")
+            plt.plot(x,[i]*100,c="#000")
+            if i < 10:
+                plt.text(i+0.345,15.1,str(i),size=15,weight="demibold")
+                plt.text(15.1,14.345-i,str(i),size=15,weight="demibold")
+            elif i < 15:
+                plt.text(i+0.2,15.1,str(i),size=15,weight="demibold")
+                plt.text(15.1,14.3-i,str(i),size=15,weight="demibold")
+            for j in range(15):
+                if i == 15:
+                    break
+                (x1,y1) = trans_coor(i,j)
+                plt.text(x1,y1,self.board[i][j],size=15,weight="demibold")
+        plt.show()
+        
+        
     def placeWord(self,player_pawn,word,x,y,direction):
         """
         Toma un objeto word y va poniendo sus letras el objeto board.
