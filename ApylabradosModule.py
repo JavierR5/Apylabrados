@@ -255,20 +255,11 @@ class Board():
 
         """
         Muestra el tablero
-
-        print("\n ", end = " ")
-        for n in range(len(self.board)):
-          print("{}{} ".format(0 if n <= 9 else "", n), end = " ")
-        print("\n+" + "---+" * len(self.board))
-        for i in range(len(self.board)):
-          print("|", end = " ")
-          for j in range(len(self.board)):
-            print(self.board[i][j] + " |", end = " ")
-          print("{}{}".format(0 if i <= 9 else "", i), end = " ")
-          print("\n+" + "---+" * len(self.board))
-"""
+        """
         import matplotlib.pyplot as plt
         import numpy as np
+        import pandas as pd
+        """
         x = np.linspace(0,15,100)
         plt.figure(figsize=[10,10]) # Sirve para definir un mayor tamaño de la imagen.
         for i in range(16):
@@ -285,6 +276,38 @@ class Board():
                     break
                 (x1,y1) = trans_coor(i,j)
                 plt.text(x1,y1,self.board[i][j],size=15,weight="demibold")
+        """
+        #Definicion variables del problema.
+        fig = plt.figure(figsize=[10,10])
+        ax = fig.add_subplot(1,1,1)
+        colores = pd.read_csv("xycolor_board.csv")
+
+
+        #Lineas verticales y horizontales.
+        for i in range(15):
+            ax.plot([i,i],[0,15],c="#000")
+            ax.plot([0,15],[i,i],c="#000")
+            if i < 10:
+                ax.text(i+0.345,15.1,str(i),size=15,weight="demibold")
+                ax.text(15.1,14.345-i,str(i),size=15,weight="demibold")
+            elif i < 15:
+                ax.text(i+0.2,15.1,str(i),size=15,weight="demibold")
+                ax.text(15.1,14.3-i,str(i),size=15,weight="demibold")
+            for j in range(15):
+                if i == 15:
+                    break
+                (x1,y1) = trans_coor(i,j)
+                ax.text(x1,y1,self.board[i][j],size=15,weight="demibold")
+        ax.plot([15,15],[0,15],c="#000")
+        ax.plot([0,15],[15,15],c="#000")
+
+        #Pintando los cuadrados
+        for i in colores.index:
+            vertex = np.array([[colores["x"][i]-0.5,colores["y"][i]-0.5],[colores["x"][i]+0.5,colores["y"][i]-0.5],
+                             [colores["x"][i]+0.5,colores["y"][i]+0.5],[colores["x"][i]-0.5,colores["y"][i]+0.5]])
+            polygon = plt.Polygon(vertex,color=colores["color"][i])
+            ax.add_artist(polygon)
+        
         plt.show()
         
         
