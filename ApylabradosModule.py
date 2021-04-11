@@ -250,6 +250,7 @@ class Board():
         self.totalPawn = 0
         self.totalWords = 0
         self.score = 0
+        self.multiplier = []
     
     def showBoard(self):
 
@@ -259,24 +260,7 @@ class Board():
         import matplotlib.pyplot as plt
         import numpy as np
         import pandas as pd
-        """
-        x = np.linspace(0,15,100)
-        plt.figure(figsize=[10,10]) # Sirve para definir un mayor tamaño de la imagen.
-        for i in range(16):
-            plt.plot([i]*100,x,c="#000")
-            plt.plot(x,[i]*100,c="#000")
-            if i < 10:
-                plt.text(i+0.345,15.1,str(i),size=15,weight="demibold")
-                plt.text(15.1,14.345-i,str(i),size=15,weight="demibold")
-            elif i < 15:
-                plt.text(i+0.2,15.1,str(i),size=15,weight="demibold")
-                plt.text(15.1,14.3-i,str(i),size=15,weight="demibold")
-            for j in range(15):
-                if i == 15:
-                    break
-                (x1,y1) = trans_coor(i,j)
-                plt.text(x1,y1,self.board[i][j],size=15,weight="demibold")
-        """
+
         #Definicion variables del problema.
         fig = plt.figure(figsize=[10,10])
         ax = fig.add_subplot(1,1,1)
@@ -314,25 +298,60 @@ class Board():
     def placeWord(self,player_pawn,word,x,y,direction):
         """
         Toma un objeto word y va poniendo sus letras el objeto board.
-        Si la tabla no contaba con la ficha a poner se elimina esta del objeto player_pawn
+        Si la tabla no contaba con la ficha al poner se elimina esta del objeto player_pawn
+
+        Tambien aplica los multiplicadores que hay en el trablero.
 
         board [n° fila][n° columna]
         """
+
+        mw = []
+        suma = 0
+        dumy = 0
+
         if direction == "V":
             for i in range(len(word.word)):
                 if self.board[x+i][y] != word.word[i]:
                     self.board[x+i][y] = word.word[i]
                     self.totalPawn += 1
                     player_pawn.takePawn(word.word[i])
-                    self.score += Pawn.points[word.word[i]]
+                    for row in self.multiplier:
+                        if (x+i,y) in row:
+                            dumy = 1
+                            if "p" in row[1]:
+                                self.score += Pawn.points[word.word[i]]*row[1][0]
+                                suma += Pawn.points[word.word[i]]*row[1][0]
+                            else:
+                                mw.append(row[1][0])
+                            break
+                    if dumy == 0:
+                        self.score += Pawn.points[word.word[i]]
+                        suma += Pawn.points[word.word[i]]
+                    dummy = 0
         else:
             for i in range(len(word.word)):
                 if self.board[x][y+i] != word.word[i]:
                     self.board[x][y+i] = word.word[i]
                     self.totalPawn += 1
                     player_pawn.takePawn(word.word[i])
-                    self.score += Pawn.points[word.word[i]]
+                    for row in self.multiplier:
+                        if (x+i,y) in row:
+                            dumy = 1
+                            if "p" in row[1]:
+                                self.score += Pawn.points[word.word[i]]*row[1][0]
+                                suma += Pawn.points[word.word[i]]*row[1][0]
+                            else:
+                                mw.append(row[1][0])
+                            break
+                    if dumy == 0:
+                        self.score += Pawn.points[word.word[i]]
+                        suma += Pawn.points[word.word[i]]
+                    dummy = 0
         self.totalWords += 1
+        if mw != []:
+            while mw != []:
+                suma *= mw.pop()
+            self.score += suma
     
     def isPossible(self,palabra,x,y,direction):
         """
@@ -433,6 +452,9 @@ class Board():
         return objeto
     
     def showWordPlacement(self,player_pawn,palabra):
+        """
+        Muestra la posicion en la que se puede poner la palabra entregada.
+        """
         dic = {"H":[],"V":[]}
         tabla_jugador = player_pawn.getFrequency()
         for i in range(15):
@@ -447,5 +469,15 @@ class Board():
             print(key)
             for i in dic[key]:
                 print(i.__str__())
+    
+    def setUpMultiplier(self):
+        import pandas as pd
+        """
+        Abre el archivo multiplier_board.csv para asi llenar la lista multiplier.
+        Notar que el csv contiene los multiplicadores del tablero.
+        """
+        mul = pd.read_csv("multiplier_board.csv")
 
+        for i in mul.index:
+            self.multiplier.append(((mul["x"][i],mul["y"][i]),((mul["multiplier"][i],mul["type"][i]))))
 
