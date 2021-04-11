@@ -255,7 +255,8 @@ class Board():
     def showBoard(self):
 
         """
-        Muestra el tablero
+        Muestra el tablero, con las palabras que hay en él y los multiplicadores correspondientes.
+        Tambien muestra el puntaje Total.
         """
         import matplotlib.pyplot as plt
         import numpy as np
@@ -292,6 +293,10 @@ class Board():
             polygon = plt.Polygon(vertex,color=colores["color"][i])
             ax.add_artist(polygon)
         
+        #Mostrado Puntaje
+        plt.plot([0,2],[-0.5,-0.5])
+        plt.text(0,-0.5,"Score={}".format(self.score),size=15,weight="demibold")
+
         plt.show()
         
         
