@@ -252,7 +252,7 @@ class Board():
         self.score = 0
         self.multiplier = []
     
-    def showBoard(self):
+    def showBoard(self,player_pawn,bag):
 
         """
         Muestra el tablero, con las palabras que hay en él y los multiplicadores correspondientes.
@@ -294,9 +294,23 @@ class Board():
             ax.add_artist(polygon)
         
         #Mostrado Puntaje
-        plt.plot([0,2],[-0.5,-0.5])
         plt.text(0,-0.5,"Score={}".format(self.score),size=15,weight="demibold")
 
+        #Agregando Fichas a la bolsa
+        for _ in range(7-player_pawn.getTotalPawn()):
+            if bag.letter == []:
+                print("Las fichas de la bolsa se acabaron")
+                break
+            player_pawn.addPawn(bag.takeRandomPawn())
+
+        #Mostrando las fichas en el Tablero.
+        i = 0
+        for p in player_pawn.letter:
+            vertex = np.array([[3+i-0.15,-0.5-0.15],[3+i+0.5,-0.5-0.15],[3+i+0.5,-0.5+0.5],[3+i-0.15,-0.5+0.5]])
+            polygon = plt.Polygon(vertex,color="#00A86B",alpha=0.5)
+            ax.add_artist(polygon)
+            plt.text(3+i,-0.5,p,size=15,weight="demibold")
+            i += 1
         plt.show()
         
         
